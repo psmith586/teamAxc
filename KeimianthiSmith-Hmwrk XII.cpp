@@ -1,33 +1,16 @@
 #include<iostream>
 #include<fstream>
-#include<stdio.h>
-#include<conio.h>
-#include<process.h>
-#include<string.h>
+
 
 using namespace std;
 
 // Functions for Changing
-void Modify(char [] , int SIZE);
-void Add(char [ , int SIZE);
-
-const int NAME_SIZE = 60,
-          ADD_SIZE = 60,
-          LOC_SIZE = 100,
-          PHONE_SIZE = 15,
-          DATE_SIZE [11];
+void Modify();
+void Add();
 
 
-struct accountHolder
-{
-    char name[NAME_SIZE];
-    char address[ADD_SIZE];
-    char location[LOC_SIZE];
-    double balance;
-    char date[DATE_SIZE];
 
-};
-
+//try to use the default code from the pdf in hwXII
 void Add(char [], int SIZE)  //function to add New record in Data File
 {
     char ch = 'y';
@@ -44,7 +27,7 @@ void Add(char [], int SIZE)  //function to add New record in Data File
 
 }
 
-
+//we're gonna have to do it field by field i think
 void Modify(char [], int SIZE) //Function to Modify Particular Record from Data File
 {
 
