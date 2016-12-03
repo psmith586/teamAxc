@@ -20,7 +20,7 @@ struct accountHolder
     char name[NAME_SIZE];
     char address[ADD_SIZE];
     char location[LOC_SIZE];
-	char phone[PHONE_SIZE];
+    char phone[PHONE_SIZE];
     double balance;
     char date[DATE_SIZE];
 
@@ -50,15 +50,15 @@ int main()
 	switch (choice)
 	{
 		case 1: Add();
-			    break;
+			break;
 		case 2: cout << "Under Construction";
 	        	break;
 		case 3: cout << "Under Construction";
-				break;
+		        break;
 		case 4: Modify();
-				break;
+			break;
 		case 5: cout << "Under Construction";
-				break;
+			break;
 		case 6: return 0;
 	}
 
