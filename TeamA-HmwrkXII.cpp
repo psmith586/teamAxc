@@ -4,23 +4,27 @@
 using namespace std;
 
 //funtion prototypes
-void Modify();
-void Add();
+void modify();
+void add();
+void delete_rec();
+void display();
+void display_all();
 
 //sizes for record fields
 const int NAME_SIZE = 60,
           ADD_SIZE = 60,
           LOC_SIZE = 100,
           PHONE_SIZE = 15,
-          DATE_SIZE = 11;
+          DATE_SIZE = 11,
+          MAX_SIZE = 300;
 
 //structure for customer records
-struct accountHolder
+struct AccountItem
 {
     char name[NAME_SIZE];
     char address[ADD_SIZE];
     char location[LOC_SIZE];
-    char phone[PHONE_SIZE];
+	char phone[PHONE_SIZE];
     double balance;
     char date[DATE_SIZE];
 
@@ -49,18 +53,73 @@ int main()
 
 	switch (choice)
 	{
-		case 1: Add();
-			break;
+		case 1: add();
+			    break;
 		case 2: cout << "Under Construction";
 	        	break;
 		case 3: cout << "Under Construction";
-		        break;
-		case 4: Modify();
-			break;
-		case 5: cout << "Under Construction";
-			break;
+				break;
+		case 4: cout << "Testing";
+				break;
+		case 5: display_all();
+				break;
 		case 6: return 0;
 	}
 
 	return 0;
+}
+
+void add()
+{
+	char name[NAME_SIZE], address[ADD_SIZE],
+		 location[LOC_SIZE], phone[PHONE_SIZE],
+		 date[DATE_SIZE];
+
+	double balance;
+
+	cout << "Enter Name: ";
+	cin >> name;
+	cout << "\nEnter Address: ";
+	cin >> address;
+	cout << "\nEnter City, State, Zip: ";
+	cin >> location;
+	cout << "\nEnter Phone Number: ";
+	cin >> phone;
+	cout << "\nEnter Balance: ";
+	cin >> balance;
+	cout << "\nEnter Today's Date: ";
+	cin >> date;
+
+	AccountItem record = {name, address, location, phone, balance, date};
+
+	fstream accounts("cust.dat", ios::out | ios::binary);
+
+	for (int count = 0;count < sizeof(record); count++)
+		accounts.write(reinterpret_cast<char *>(&record),sizeof(record));
+
+	cout << "Record written.";
+
+	accounts.close();
+}
+
+void display_all()
+{
+	AccountItem record;
+
+	fstream accounts("cust.dat", ios::in | ios::binary);
+	accounts.read(reinterpret_cast<char *>(&record),sizeof(record));
+
+	while (!accounts.eof())
+	{
+		cout << "Name: " << record.name << endl;
+		cout << "Address: " << record.address << endl;
+		cout << "Location: " << record.location << endl;
+		cout << "Phone Number: " << record.phone << endl;
+		cout << "Balance: " << record.balance << endl;
+		cout << "Date: " << record.date << endl << endl;
+		accounts.read(reinterpret_cast<char *>(&record),sizeof(record));
+	}
+
+	accounts.close();
+
 }
