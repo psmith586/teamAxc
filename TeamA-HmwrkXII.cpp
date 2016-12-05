@@ -69,7 +69,7 @@ int main()
 	return 0;
 }
 
-void add()
+void add(AccountItem record)
 {
 	char name[NAME_SIZE], address[ADD_SIZE],
 		 location[LOC_SIZE], phone[PHONE_SIZE],
@@ -78,17 +78,17 @@ void add()
 	double balance;
 
 	cout << "Enter Name: ";
-	cin >> name;
+	cin >> record.name;
 	cout << "\nEnter Address: ";
-	cin >> address;
+	cin >> record.address;
 	cout << "\nEnter City, State, Zip: ";
-	cin >> location;
+	cin >> record.location;
 	cout << "\nEnter Phone Number: ";
-	cin >> phone;
+	cin >> record.phone;
 	cout << "\nEnter Balance: ";
-	cin >> balance;
+	cin >> record.balance;
 	cout << "\nEnter Today's Date: ";
-	cin >> date;
+	cin >> record.date;
 
 	AccountItem record = {name, address, location, phone, balance, date};
 
