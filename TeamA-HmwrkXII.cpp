@@ -1,11 +1,18 @@
 #include<iostream>
 #include<fstream>
+#include<string>
+#include<cctype>
+#include<cstring>
+
 
 using namespace std;
 
 //funtion prototypes
-void Modify();
-void Add();
+void modify();
+void add();
+void delete_rec();
+void display();
+void display_all();
 
 //sizes for record fields
 const int NAME_SIZE = 60,
@@ -20,7 +27,7 @@ struct accountHolder
     char name[NAME_SIZE];
     char address[ADD_SIZE];
     char location[LOC_SIZE];
-    char phone[PHONE_SIZE];
+	char phone[PHONE_SIZE];
     double balance;
     char date[DATE_SIZE];
 
@@ -41,26 +48,90 @@ int main()
 		 << "Enter your choice: ";
 		 cin >> choice;
 
-	while (choice > 6 && choice < 1)
+	if (choice > 6 || choice < 1)
 	{
 		cout << "Please Enter a valid choice: ";
 		cin >> choice;
 	}
+    else
+    {
+        while (choice != 6)
+        {
+            switch (choice)
+            {
+                case 1: add();
+                        break;
+                case 2: cout << "Under Construction";
+                        break;
+                case 3: cout << "Under Construction";
+                        break;
+                case 4: cout << "Testing";
+                        break;
+                case 5: display_all();
+                        break;
+                case 6: return 0;
+            }
+            cout << "\n\nEnter your choice: ";
+            cin >> choice;
+        }
+    }
+	return 0;
+}
 
-	switch (choice)
+void add()
+{
+	accountHolder record;
+
+    char name[NAME_SIZE], address[ADD_SIZE], location[LOC_SIZE];
+
+    cin.ignore();
+	cout << "Enter Name: ";
+	cin.getline(name, NAME_SIZE);
+	strcpy(record.name, name);
+
+	cout << "Enter Address: ";
+	cin.getline(address, ADD_SIZE);
+	strcpy(record.address, address);
+
+	cout << "Enter City, State, Zip: ";
+	cin.getline(location, LOC_SIZE);
+	strcpy(record.location, location);
+
+	cout << "Enter Phone Number: ";
+	cin >> record.phone;
+	cout << "Enter Balance: $";
+	cin >> record.balance;
+	cout << "Enter Today's Date: ";
+	cin >> record.date;
+
+	fstream accounts("cust.dat", ios::out | ios::binary);
+
+    accounts.write(reinterpret_cast<char *>(&record),sizeof(record));
+
+	cout << "Record written.";
+
+	accounts.close();
+}
+
+void display_all()
+{
+	accountHolder record;
+
+	fstream accounts("cust.dat", ios::in | ios::binary);
+	accounts.read(reinterpret_cast<char *>(&record),sizeof(record));
+
+	while (!accounts.eof())
 	{
-		case 1: Add();
-			break;
-		case 2: cout << "Under Construction";
-	        	break;
-		case 3: cout << "Under Construction";
-		        break;
-		case 4: Modify();
-			break;
-		case 5: cout << "Under Construction";
-			break;
-		case 6: return 0;
+		cout << "Name: " << record.name << endl;
+		cout << "Address: " << record.address << endl;
+		cout << "Location: " << record.location << endl;
+		cout << "Phone Number: " << record.phone << endl;
+		cout << "Balance: $" << record.balance << endl;
+		cout << "Date: " << record.date << endl << endl;
+		accounts.read(reinterpret_cast<char *>(&record),sizeof(record));
+		cout << "\n";
 	}
 
-	return 0;
+	accounts.close();
+
 }
