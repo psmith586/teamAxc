@@ -15,11 +15,10 @@ const int NAME_SIZE = 60,
           ADD_SIZE = 60,
           LOC_SIZE = 100,
           PHONE_SIZE = 15,
-          DATE_SIZE = 11,
-          MAX_SIZE = 300;
+          DATE_SIZE = 11;
 
 //structure for customer records
-struct AccountItem
+struct accountHolder
 {
     char name[NAME_SIZE];
     char address[ADD_SIZE];
@@ -51,25 +50,30 @@ int main()
 		cin >> choice;
 	}
 
-	switch (choice)
+	while (choice != 6)
 	{
-		case 1: add();
-			    break;
-		case 2: cout << "Under Construction";
-	        	break;
-		case 3: cout << "Under Construction";
-				break;
-		case 4: cout << "Testing";
-				break;
-		case 5: display_all();
-				break;
-		case 6: return 0;
+	    switch (choice)
+        {
+            case 1: add();
+                    break;
+            case 2: cout << "Under Construction";
+                    break;
+            case 3: cout << "Under Construction";
+                    break;
+            case 4: cout << "Testing";
+                    break;
+            case 5: display_all();
+                    break;
+            case 6: return 0;
+        }
+        cout << "Enter your choice: ";
+        cin >> choice;
 	}
 
 	return 0;
 }
 
-void add(AccountItem record)
+void add()
 {
 	char name[NAME_SIZE], address[ADD_SIZE],
 		 location[LOC_SIZE], phone[PHONE_SIZE],
@@ -77,25 +81,24 @@ void add(AccountItem record)
 
 	double balance;
 
+	accountHolder record;
+
 	cout << "Enter Name: ";
 	cin >> record.name;
-	cout << "\nEnter Address: ";
+	cout << "Enter Address: ";
 	cin >> record.address;
-	cout << "\nEnter City, State, Zip: ";
+	cout << "Enter City, State, Zip: ";
 	cin >> record.location;
-	cout << "\nEnter Phone Number: ";
+	cout << "Enter Phone Number: ";
 	cin >> record.phone;
-	cout << "\nEnter Balance: ";
+	cout << "Enter Balance: ";
 	cin >> record.balance;
-	cout << "\nEnter Today's Date: ";
+	cout << "Enter Today's Date: ";
 	cin >> record.date;
-
-	AccountItem record = {name, address, location, phone, balance, date};
 
 	fstream accounts("cust.dat", ios::out | ios::binary);
 
-	for (int count = 0;count < sizeof(record); count++)
-		accounts.write(reinterpret_cast<char *>(&record),sizeof(record));
+    accounts.write(reinterpret_cast<char *>(&record),sizeof(record));
 
 	cout << "Record written.";
 
@@ -104,7 +107,7 @@ void add(AccountItem record)
 
 void display_all()
 {
-	AccountItem record;
+	accountHolder record;
 
 	fstream accounts("cust.dat", ios::in | ios::binary);
 	accounts.read(reinterpret_cast<char *>(&record),sizeof(record));
