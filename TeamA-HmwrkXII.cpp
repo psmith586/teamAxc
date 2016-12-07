@@ -38,87 +38,96 @@ int main()
 	int choice;
 
 	//display menu and get choice
-	cout << "* * * * MAIN MENU * * * *\n\n"
-		 << "1. Enter a new Customer Account\n"
-		 << "2. Display a Customer Account\n"
-		 << "3. Delete a Customer Account\n"
-		 << "4. Change a Customer Account\n"
-		 << "5. Display All Customer Accounts\n"
-		 << "6. Exit the Program\n\n"
-		 << "Enter your choice: ";
-		 cin >> choice;
-
-	if (choice > 6 || choice < 1)
-	{
-		cout << "Please Enter a valid choice: ";
-		cin >> choice;
-	}
-    else
+    do
     {
-        while (choice != 6)
+
+		cout << "* * * * MAIN MENU * * * *\n\n"
+		<< "1. Enter a new Customer Account\n"
+		<< "2. Display a Customer Account\n"
+		<< "3. Delete a Customer Account\n"
+		<< "4. Change a Customer Account\n"
+		<< "5. Display All Customer Accounts\n"
+		<< "6. Exit the Program\n\n"
+		<< "Enter your choice: ";
+		cin >> choice;
+		cin.ignore();
+
+		while (choice > 6 || choice < 1)
+		{
+			cout << "Please Enter a valid choice: ";
+			cin >> choice;
+		}
+
+        switch (choice)
         {
-            switch (choice)
-            {
-                case 1: add();
-                        break;
-                case 2: cout << "Under Construction";
-                        break;
-                case 3: cout << "Under Construction";
-                        break;
-                case 4: cout << "Testing";
-                        break;
-                case 5: display_all();
-                        break;
-                case 6: return 0;
-            }
-            cout << "\n\nEnter your choice: ";
-            cin >> choice;
+            case 1: add();
+                    break;
+            case 2: display();
+                    break;
+            case 3: cout << "Under Construction";
+                    break;
+            case 4: modify;
+                    break;
+            case 5: display_all();
+                    break;
+            case 6: return 0;
         }
-    }
+
+    } while (choice != 6);
+
 	return 0;
 }
 
 void add()
 {
 	accountHolder record;
+    char again;
 
-    char name[NAME_SIZE], address[ADD_SIZE], location[LOC_SIZE];
+    fstream accounts("cust.dat", ios::out | ios::binary);
 
-    cin.ignore();
-	cout << "Enter Name: ";
-	cin.getline(name, NAME_SIZE);
-	strcpy(record.name, name);
+	if (!accounts)
+        cout << "Error opening file.\n";
 
-	cout << "Enter Address: ";
-	cin.getline(address, ADD_SIZE);
-	strcpy(record.address, address);
+    do
+	{
+	    //get info
+	    cout << "Enter Name: ";
+        cin.getline(record.name, NAME_SIZE);
+        cout << "Enter Address: ";
+        cin.getline(record.address, ADD_SIZE);
+        cout << "Enter City, State, Zip: ";
+        cin.getline(record.location, LOC_SIZE);
+        cout << "Enter Phone Number: ";
+        cin.getline(record.phone, PHONE_SIZE);
+        cout << "Enter Balance: $";
+        cin >> record.balance;
+        cin.ignore();
+        cout << "Enter Today's Date: ";
+        cin.getline(record.date, DATE_SIZE);
 
-	cout << "Enter City, State, Zip: ";
-	cin.getline(location, LOC_SIZE);
-	strcpy(record.location, location);
+        //write to file
+        accounts.write(reinterpret_cast<char *>(&record), sizeof(record));
+        cout << "Record written.";
+        cout << "Would you like to add another file [Y/N]: ";
+        cin >> again;
+	} while (again == 'Y' || again == 'y');
 
-	cout << "Enter Phone Number: ";
-	cin >> record.phone;
-	cout << "Enter Balance: $";
-	cin >> record.balance;
-	cout << "Enter Today's Date: ";
-	cin >> record.date;
-
-	fstream accounts("cust.dat", ios::out | ios::binary);
-
-    accounts.write(reinterpret_cast<char *>(&record),sizeof(record));
-
-	cout << "Record written.";
-
-	accounts.close();
+    accounts.close();
 }
 
 void display_all()
 {
 	accountHolder record;
+    char again;
+    fstream accounts("cust.dat", ios::out | ios::binary);
 
-	fstream accounts("cust.dat", ios::in | ios::binary);
-	accounts.read(reinterpret_cast<char *>(&record),sizeof(record));
+    if (!accounts)
+        cout << "Error opening file.\n";
+
+    cout << "Accounts:\n\n";
+
+    //read first record
+    accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
 
 	while (!accounts.eof())
 	{
@@ -128,10 +137,90 @@ void display_all()
 		cout << "Phone Number: " << record.phone << endl;
 		cout << "Balance: $" << record.balance << endl;
 		cout << "Date: " << record.date << endl << endl;
-		accounts.read(reinterpret_cast<char *>(&record),sizeof(record));
-		cout << "\n";
+		accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
 	}
 
 	accounts.close();
 
+}
+
+void display()
+{
+    accountHolder record;
+    long recNum;
+	
+    fstream accounts("cust.dat", ios::out | ios::binary);
+	
+	if (!accounts)
+        cout << "Error opening file.\n";
+	
+	//get record number from user
+	cout << "Enter the Record Number you want to view: ";
+	cin >> recNum;
+	
+	//get to record chosen
+	accounts.seekg(recNum * sizeof(record), ios::beg);
+	accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
+
+	//display contents
+	cout << "Name: " << record.name << endl;
+	cout << "Address: " << record.address << endl;
+	cout << "Location: " << record.location << endl;
+	cout << "Phone Number: " << record.phone << endl;
+	cout << "Balance: $" << record.balance << endl;
+	cout << "Date: " << record.date << endl;
+
+
+}
+
+void modify()
+{
+	accountHolder record;
+	long recNum;
+
+	//open file
+	fstream accounts("cust.dat", ios::in | ios::out |ios::binary);
+
+	if (!accounts)
+        cout << "Error opening file.";
+
+	//get record number from user
+	cout << "Enter the Record Number you want to edit: ";
+	cin >> recNum;
+
+	//get to record chosen
+	accounts.seekg(recNum * sizeof(record), ios::beg);
+	accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
+
+	//display current contents
+	cout << "Name: " << record.name << endl;
+	cout << "Address: " << record.address << endl;
+	cout << "Location: " << record.location << endl;
+	cout << "Phone Number: " << record.phone << endl;
+	cout << "Balance: $" << record.balance << endl;
+	cout << "Date: " << record.date << endl;
+
+	//get new information
+	cout << "Enter new information:\n";
+	cout << "Enter Name: ";
+    cin.getline(record.name, NAME_SIZE);
+    cout << "Enter Address: ";
+    cin.getline(record.address, ADD_SIZE);
+    cout << "Enter City, State, Zip: ";
+    cin.getline(record.location, LOC_SIZE);
+    cout << "Enter Phone Number: ";
+    cin.getline(record.phone, PHONE_SIZE);
+    cin.ignore();
+    cout << "Enter Balance: $";
+    cin >> record.balance;
+    cout << "Enter Today's Date: ";
+    cin.getline(record.date, DATE_SIZE);
+
+	//go back to the beginning of this record
+	accounts.seekp(recNum * sizeof(record), ios::beg);
+
+	//rewrite the record
+	accounts.write(reinterpret_cast<char *>(&record), sizeof(record));
+
+	accounts.close();
 }
