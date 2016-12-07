@@ -80,7 +80,7 @@ void add()
 	accountHolder record;
     char again;
 
-    fstream accounts("cust.dat", ios::out | ios::binary);
+    fstream accounts("cust.dat", ios::app | ios::binary);
 
 	if (!accounts)
         cout << "Error opening file.\n";
