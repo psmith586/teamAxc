@@ -23,7 +23,7 @@ struct accountHolder
     char name[NAME_SIZE];
     char address[ADD_SIZE];
     char location[LOC_SIZE];
-	char phone[PHONE_SIZE];
+    char phone[PHONE_SIZE];
     double balance;
     char date[DATE_SIZE];
 
