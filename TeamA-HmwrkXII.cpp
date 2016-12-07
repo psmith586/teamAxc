@@ -1,9 +1,5 @@
 #include<iostream>
 #include<fstream>
-#include<string>
-#include<cctype>
-#include<cstring>
-
 
 using namespace std;
 
@@ -27,7 +23,7 @@ struct accountHolder
     char name[NAME_SIZE];
     char address[ADD_SIZE];
     char location[LOC_SIZE];
-    char phone[PHONE_SIZE];
+	char phone[PHONE_SIZE];
     double balance;
     char date[DATE_SIZE];
 
@@ -56,6 +52,7 @@ int main()
 		{
 			cout << "Please Enter a valid choice: ";
 			cin >> choice;
+			cin.ignore();
 		}
 
         switch (choice)
@@ -66,7 +63,7 @@ int main()
                     break;
             case 3: cout << "Under Construction";
                     break;
-            case 4: modify;
+            case 4: modify();
                     break;
             case 5: display_all();
                     break;
@@ -80,18 +77,19 @@ int main()
 
 void add()
 {
-    accountHolder record;
+	accountHolder record;
     char again;
 
     fstream accounts("cust.dat", ios::out | ios::binary);
 
-    if (!accounts)
-    	cout << "Error opening file.\n";
+	if (!accounts)
+        cout << "Error opening file.\n";
 
     do
-    {
-	//get info
-	cout << "Enter Name: ";
+	{
+	    cout << "Enter the following information:\n";
+	    //get info
+	    cout << "Enter Name: ";
         cin.getline(record.name, NAME_SIZE);
         cout << "Enter Address: ";
         cin.getline(record.address, ADD_SIZE);
@@ -107,19 +105,20 @@ void add()
 
         //write to file
         accounts.write(reinterpret_cast<char *>(&record), sizeof(record));
-        cout << "Record written.";
+
+        cout << "\nRecord written.";
         cout << "Would you like to add another file [Y/N]: ";
         cin >> again;
-    } while (again == 'Y' || again == 'y');
+        cin.ignore();
+	} while (again == 'Y' || again == 'y');
 
     accounts.close();
 }
 
 void display_all()
 {
-    accountHolder record;
-    char again;
-    fstream accounts("cust.dat", ios::out | ios::binary);
+	accountHolder record;
+    fstream accounts("cust.dat", ios::in | ios::binary);
 
     if (!accounts)
         cout << "Error opening file.\n";
@@ -140,7 +139,7 @@ void display_all()
 		accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
 	}
 
-    accounts.close();
+	accounts.close();
 
 }
 
@@ -148,16 +147,16 @@ void display()
 {
     accountHolder record;
     long recNum;
-	
-    fstream accounts("cust.dat", ios::out | ios::binary);
-	
+
+    fstream accounts("cust.dat", ios::in | ios::binary);
+
 	if (!accounts)
-            cout << "Error opening file.\n";
-	
+        cout << "Error opening file.\n";
+
 	//get record number from user
 	cout << "Enter the Record Number you want to view: ";
 	cin >> recNum;
-	
+
 	//get to record chosen
 	accounts.seekg(recNum * sizeof(record), ios::beg);
 	accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
@@ -187,6 +186,7 @@ void modify()
 	//get record number from user
 	cout << "Enter the Record Number you want to edit: ";
 	cin >> recNum;
+	cin.ignore();
 
 	//get to record chosen
 	accounts.seekg(recNum * sizeof(record), ios::beg);
@@ -201,20 +201,19 @@ void modify()
 	cout << "Date: " << record.date << endl;
 
 	//get new information
-	cout << "Enter new information:\n";
-	cout << "Enter Name: ";
-        cin.getline(record.name, NAME_SIZE);
-        cout << "Enter Address: ";
-        cin.getline(record.address, ADD_SIZE);
-        cout << "Enter City, State, Zip: ";
-        cin.getline(record.location, LOC_SIZE);
-        cout << "Enter Phone Number: ";
-        cin.getline(record.phone, PHONE_SIZE);
-        cin.ignore();
-        cout << "Enter Balance: $";
-        cin >> record.balance;
-        cout << "Enter Today's Date: ";
-        cin.getline(record.date, DATE_SIZE);
+    cout << "Enter Name: ";
+    cin.getline(record.name, NAME_SIZE);
+    cout << "Enter Address: ";
+    cin.getline(record.address, ADD_SIZE);
+    cout << "Enter City, State, Zip: ";
+    cin.getline(record.location, LOC_SIZE);
+    cout << "Enter Phone Number: ";
+    cin.getline(record.phone, PHONE_SIZE);
+    cout << "Enter Balance: $";
+    cin >> record.balance;
+    cin.ignore();
+    cout << "Enter Today's Date: ";
+    cin.getline(record.date, DATE_SIZE);
 
 	//go back to the beginning of this record
 	accounts.seekp(recNum * sizeof(record), ios::beg);
