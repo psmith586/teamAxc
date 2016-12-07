@@ -23,7 +23,7 @@ struct accountHolder
     char name[NAME_SIZE];
     char address[ADD_SIZE];
     char location[LOC_SIZE];
-    char phone[PHONE_SIZE];
+	char phone[PHONE_SIZE];
     double balance;
     char date[DATE_SIZE];
 
@@ -61,7 +61,7 @@ int main()
                     break;
             case 2: display();
                     break;
-            case 3: cout << "Under Construction";
+            case 3: delete_rec();
                     break;
             case 4: modify();
                     break;
@@ -85,7 +85,7 @@ void add()
 	if (!accounts)
         cout << "Error opening file.\n";
 
-    do
+	do
 	{
 	    cout << "Enter the following information:\n";
 	    //get info
@@ -154,8 +154,9 @@ void display()
         cout << "Error opening file.\n";
 
 	//get record number from user
-	cout << "Enter the Record Number you want to view: ";
+	cout << "Enter the Record Number you want to view[starting from 1]: ";
 	cin >> recNum;
+	recNum -= 1;
 
 	//get to record chosen
 	accounts.seekg(recNum * sizeof(record), ios::beg);
@@ -169,6 +170,7 @@ void display()
 	cout << "Balance: $" << record.balance << endl;
 	cout << "Date: " << record.date << endl;
 
+	accounts.close();
 
 }
 
@@ -184,8 +186,9 @@ void modify()
         cout << "Error opening file.";
 
 	//get record number from user
-	cout << "Enter the Record Number you want to edit: ";
+	cout << "Enter the Record Number you want to edit[starting from 1]: ";
 	cin >> recNum;
+	recNum -= 1;
 	cin.ignore();
 
 	//get to record chosen
@@ -222,4 +225,55 @@ void modify()
 	accounts.write(reinterpret_cast<char *>(&record), sizeof(record));
 
 	accounts.close();
+}
+
+void delete_rec()
+{
+	accountHolder record;
+	long recNum;
+
+	//open file and temp
+	fstream accounts("cust.dat", ios::in | ios::out | ios::binary);
+	fstream temp("temp.dat", ios::out | ios::binary);
+
+	if (!accounts || !temp)
+        cout << "Error opening one of the files.";
+
+	//get record number from user
+	cout << "Enter the Record Number you want to delete[starting from 1]: ";
+	cin >> recNum;
+	recNum -= 1;
+
+	//move to the position of the record and read it
+	accounts.seekg(recNum * sizeof(record), ios::beg);
+	accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
+
+	//change 1st field to null
+	record.name[0] = '\0';
+
+	//rewrite the record
+	accounts.seekp(recNum * sizeof(record), ios::beg);
+	accounts.write(reinterpret_cast<char *>(&record), sizeof(record));
+
+	//return to the beginning of file
+	accounts.seekg(0L, ios::beg);
+
+	//reread 1st record
+	accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
+
+	//write the records except the flagged one to temp
+	while (!accounts.eof())
+	{
+		if (record.name[0] != '\0')
+			temp.write(reinterpret_cast<char *>(&record), sizeof(record));
+
+		accounts.read(reinterpret_cast<char *>(&record), sizeof(record));
+
+	}
+
+	accounts.close();
+	temp.close();
+	remove("cust.dat");
+	rename("temp.dat", "cust.dat");
+
 }
